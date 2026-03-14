@@ -1,0 +1,9 @@
+name: PecoraGenesis
+version: '1.0'
+main: your.domain.minecraft.pecoraGenesis.PecoraGenesis
+api-version: '1.21'
+
+commands:
+  pecora:
+    description: PecoraGenesis メインコマンド
+    usage: /<command>
