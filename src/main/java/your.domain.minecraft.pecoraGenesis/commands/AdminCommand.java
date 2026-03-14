@@ -43,19 +43,22 @@ public class AdminCommand {
 
 
     public void execute(@NotNull CommandSender sender, @NotNull String[] args) {
-        if (!(sender instanceof Player player) || (!player.hasPermission("pecora.admin") && !player.isOp())) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(lang.get("no-permission"));
             return;
         }
 
+        // /pecora a だけ実行した場合
         if (args.length == 0) {
-            sender.sendMessage(lang.get("admin-help"));
-            sender.sendMessage(lang.get("admin-spawn-usage"));
-            sender.sendMessage(lang.get("admin-clickmode-usage"));
-            sender.sendMessage(lang.get("admin-click-usage"));
+            sender.sendMessage(lang.get("general-help")); // 一般用メッセージ
+            // OP または pecora.admin を持つ場合に管理者用メッセージを追加
+            if (player.hasPermission("pecora.admin") || player.isOp()) {
+                sender.sendMessage(lang.get("admin-help"));
+            }
             return;
         }
 
+        // 標準のサブコマンド処理
         switch (args[0].toLowerCase()) {
             case "spawn" -> runSpawn(player, Arrays.copyOfRange(args, 1, args.length));
             case "clickmode" -> runClickMode(player, Arrays.copyOfRange(args, 1, args.length));
