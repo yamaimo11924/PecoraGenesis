@@ -30,20 +30,24 @@ public class Update {
                     JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
                     String latestVersion = json.get("tag_name").getAsString();
 
+                    if (latestVersion.startsWith("v") || latestVersion.startsWith("V")) {
+                        latestVersion = latestVersion.substring(1);
+                    }
+
                     @SuppressWarnings("deprecation")
                     String currentVersion = plugin.getDescription().getVersion();
 
+
                     if (!currentVersion.equals(latestVersion)) {
-                        // コンソール通知（色付き）
                         Bukkit.getConsoleSender().sendMessage(
                                 Component.text("[PecoraGenesis] New version available: " + latestVersion, NamedTextColor.GOLD)
                         );
 
-                        // OP プレイヤーに通知
+                        String finalLatestVersion = latestVersion;
                         Bukkit.getOnlinePlayers().stream()
                                 .filter(player -> player.isOp())
                                 .forEach(player -> player.sendMessage(
-                                        Component.text("[PecoraGenesis] Update available: " + latestVersion, NamedTextColor.AQUA)
+                                        Component.text("[PecoraGenesis] Update available: " + finalLatestVersion, NamedTextColor.AQUA)
                                 ));
                     } else {
                         Bukkit.getConsoleSender().sendMessage(
