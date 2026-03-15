@@ -12,13 +12,14 @@ import java.util.List;
 
 public class PecoraCommand implements CommandExecutor, TabCompleter {
 
-    LanguageManager lang = PecoraGenesis.getInstance().getLanguage();
-
     private final AdminCommand adminCommand = new AdminCommand();
     private final GeneralCommand generalCommand = new GeneralCommand();
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
+
+        // LanguageManager はここで取得して安全にする
+        LanguageManager lang = PecoraGenesis.getInstance().getLanguage();
 
         if (args.length == 0) {
             sender.sendMessage(lang.get("command-help"));
@@ -42,7 +43,7 @@ public class PecoraCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String @NotNull [] args) {
         List<String> completions = new ArrayList<>();
         if (args.length == 1) {
             for (String s : Arrays.asList("version", "admin")) {
