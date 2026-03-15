@@ -60,9 +60,18 @@ public class AdminCommand {
 
         // 標準のサブコマンド処理
         switch (args[0].toLowerCase()) {
-            case "spawn" -> runSpawn(player, Arrays.copyOfRange(args, 1, args.length));
-            case "clickmode" -> runClickMode(player, Arrays.copyOfRange(args, 1, args.length));
-            case "click" -> runClick(player, Arrays.copyOfRange(args, 1, args.length));
+            case "spawn", "clickmode", "click" -> {
+                if (!player.hasPermission("pecora.admin") && !player.isOp()) {
+                    player.sendMessage(lang.get("no-permission"));
+                    return;
+                }
+
+                switch (args[0].toLowerCase()) {
+                    case "spawn" -> runSpawn(player, Arrays.copyOfRange(args, 1, args.length));
+                    case "clickmode" -> runClickMode(player, Arrays.copyOfRange(args, 1, args.length));
+                    case "click" -> runClick(player, Arrays.copyOfRange(args, 1, args.length));
+                }
+            }
             default -> sender.sendMessage(lang.get("unknown-subcommand").replace("{arg}", args[0]));
         }
     }
