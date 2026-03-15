@@ -1,6 +1,7 @@
 package your.domain.minecraft.pecoraGenesis.commands;
 
 import org.bukkit.command.*;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import your.domain.minecraft.pecoraGenesis.PecoraGenesis;
@@ -16,15 +17,14 @@ public class PecoraCommand implements CommandExecutor, TabCompleter {
     private final GeneralCommand generalCommand = new GeneralCommand();
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
+                             @NotNull String label, @NotNull String @NotNull [] args) {
 
-        // LanguageManager はここで取得して安全にする
         LanguageManager lang = PecoraGenesis.getInstance().getLanguage();
 
         if (args.length == 0) {
-            sender.sendMessage(lang.get("command-help"));
-            sender.sendMessage(lang.get("command-version"));
-            sender.sendMessage(lang.get("command-admin"));
+            // 一般プレイヤーでも表示
+            generalCommand.execute(sender, args);
             return true;
         }
 
@@ -33,10 +33,15 @@ public class PecoraCommand implements CommandExecutor, TabCompleter {
 
         switch (sub) {
             case "version", "ver" -> generalCommand.execute(sender, subArgs);
-            case "admin" -> adminCommand.execute(sender, subArgs);
-            default -> sender.sendMessage(
-                    lang.get("unknown-subcommand").replace("{arg}", args[0])
-            );
+            case "admin" -> {
+                // admin 以下は権限チェック
+                if (!(sender instanceof Player player) || (!player.hasPermission("pecora.admin") && !player.isOp())) {
+                    sender.sendMessage(lang.get("no-permission"));
+                    return true;
+                }
+                adminCommand.execute(sender, subArgs);
+            }
+            default -> sender.sendMessage(lang.get("unknown-subcommand").replace("{arg}", args[0]));
         }
 
         return true;
@@ -46,10 +51,12 @@ public class PecoraCommand implements CommandExecutor, TabCompleter {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String @NotNull [] args) {
         List<String> completions = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : Arrays.asList("version", "admin")) {
-                if (s.startsWith(args[0].toLowerCase())) completions.add(s);
+            completions.add("version"); // 誰でも見える
+            if (sender instanceof Player player && (player.hasPermission("pecora.admin") || player.isOp())) {
+                completions.add("admin"); // 権限ある人だけ
             }
-        } else if (args[0].equalsIgnoreCase("admin")) {
+        }
+        else if (args[0].equalsIgnoreCase("admin")) {
             completions = adminCommand.tabComplete(sender, Arrays.copyOfRange(args, 1, args.length));
         } else if (args[0].equalsIgnoreCase("version")) {
             completions = generalCommand.tabComplete(sender, Arrays.copyOfRange(args, 1, args.length));
