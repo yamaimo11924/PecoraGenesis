@@ -148,17 +148,29 @@ public class AdminCommand {
 
     @Nullable
     public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
+        if (!(sender instanceof Player player)) return new ArrayList<>();
+
         if (args.length == 1) {
-            List<String> subs = Arrays.asList("spawn", "clickmode", "click");
+            List<String> subs = new ArrayList<>();
+            // 権限のあるプレイヤーだけ admin サブコマンドを追加
+            if (player.hasPermission("pecora.admin") || player.isOp()) {
+                subs.addAll(Arrays.asList("spawn", "clickmode", "click"));
+            }
             List<String> filtered = new ArrayList<>();
             for (String s : subs) if (s.startsWith(args[0].toLowerCase())) filtered.add(s);
             return filtered;
         } else if (args[0].equalsIgnoreCase("spawn") && args.length == 2) {
-            return Arrays.asList("cow", "pig", "sheep", "rabbit");
+            if (player.hasPermission("pecora.admin") || player.isOp()) {
+                return Arrays.asList("cow", "pig", "sheep", "rabbit");
+            }
         } else if (args[0].equalsIgnoreCase("clickmode") && args.length == 2) {
-            return Arrays.asList("on", "off");
+            if (player.hasPermission("pecora.admin") || player.isOp()) {
+                return Arrays.asList("on", "off");
+            }
         } else if (args[0].equalsIgnoreCase("click") && args.length == 2) {
-            return Arrays.asList("AA", "AT", "TA", "GG", "CC");
+            if (player.hasPermission("pecora.admin") || player.isOp()) {
+                return Arrays.asList("AA", "AT", "TA", "GG", "CC");
+            }
         }
         return new ArrayList<>();
     }
