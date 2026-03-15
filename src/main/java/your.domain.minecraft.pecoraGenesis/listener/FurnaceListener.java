@@ -11,6 +11,8 @@ import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import your.domain.minecraft.pecoraGenesis.animals.LivestockManager;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.util.List;
 
@@ -36,9 +38,14 @@ public class FurnaceListener implements Listener {
         ItemMeta meta = input.getItemMeta();
         if (meta == null) return;
 
-        // Lore を文字列化
-        List<String> lore = meta.hasLore() ? meta.getLore() : null;
-        if (lore == null) return;
+        // loreをComponent形式で取得
+        List<Component> loreComponents = meta.lore(); // nullの場合もある
+        if (loreComponents == null || loreComponents.isEmpty()) return;
+
+        // Componentを文字列化
+        List<String> lore = loreComponents.stream()
+                .map(component -> PlainTextComponentSerializer.plainText().serialize(component))
+                .toList();
 
         boolean containsTarget = lore.stream().anyMatch(line -> line.contains("FOOD") || line.contains("STATUS"));
         if (!containsTarget) return;
@@ -49,9 +56,9 @@ public class FurnaceListener implements Listener {
         // かまどの向きに応じてドロップ位置を調整
         BlockFace facing = furnaceBlock.getBlock().getBlockData() instanceof org.bukkit.block.data.Directional dir
                 ? dir.getFacing()
-                : BlockFace.NORTH; // デフォルト北
+                : BlockFace.NORTH;
 
-        Location dropLoc = furnaceBlock.getBlock().getLocation().add(0.5, 1, 0.5); // 中央から少し上に
+        Location dropLoc = furnaceBlock.getBlock().getLocation().add(0.5, 1, 0.5);
         switch (facing) {
             case NORTH -> dropLoc.add(0, 0, -1);
             case SOUTH -> dropLoc.add(0, 0, 1);
