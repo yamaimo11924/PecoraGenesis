@@ -1,0 +1,12 @@
+# PecoraGenesis config.yml
+language: en
+gene:
+  inherit_chance: 75
+  dominance_chance: 20
+  swap_chance: 5
+  inspect_item: STONE_HOE
+  feed_item:
+    COW: [WHEAT]
+    SHEEP: [WHEAT]
+    PIG: [CARROT, POTATO, BEETROOT]
+    RABBIT: [CARROT, GOLDEN_CARROT, DANDELION]
